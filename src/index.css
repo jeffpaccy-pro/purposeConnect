@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-primary: #145DA0;
+    --brand-teal: #0B7A75;
+    --brand-action: #F59E0B;
+    --brand-success: #16A34A;
+    --brand-bg: #F7F9FC;
+    --brand-text: #182230;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F7F9FC;
+    color: #182230;
+    min-height: 100vh;
+  }
+}
