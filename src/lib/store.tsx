@@ -39,7 +39,8 @@ interface AppContextType {
   currentUser: Profile | null;
   allUsers: Profile[];
   loginAs: (usernameOrId: string) => void;
-  loginWithEmail: (email: string, pass: string) => boolean;
+  loginWithEmail: (email: string, pass?: string) => boolean;
+  loginWithSocial: (provider: 'google' | 'facebook' | 'x') => Profile;
   registerAccount: (fullName: string, email: string) => Profile;
   logout: () => void;
   updateCurrentUserProfile: (updates: Partial<Profile>) => void;
@@ -281,16 +282,91 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const loginWithEmail = (email: string) => {
-    // If demo email or any email entered, authenticate smoothly
-    const matched = allUsers.find((u) => u.username.toLowerCase() === email.split('@')[0].toLowerCase()) || allUsers[0];
-    if (matched) {
-      setCurrentUserId(matched.id);
-      addToast(`Welcome back, ${matched.full_name}`);
-      navigate('/home');
-      return true;
+  const loginWithEmail = (email: string, _pass?: string) => {
+    const cleanEmail = email.trim().toLowerCase();
+    // 1. Look for existing user with this username or matching email
+    let matched = allUsers.find(
+      (u) =>
+        u.username.toLowerCase() === cleanEmail.split('@')[0].toLowerCase() ||
+        (u as any).email?.toLowerCase() === cleanEmail
+    );
+
+    // 2. If no user matches yet, create a real account for this email immediately
+    if (!matched) {
+      const username = cleanEmail.split('@')[0].replace(/[^a-z0-9_]/g, '') || `user_${Date.now()}`;
+      const nameParts = cleanEmail.split('@')[0].split(/[._-]/).filter(Boolean);
+      const formattedName = nameParts.length > 0
+        ? nameParts.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+        : 'Community Member';
+
+      matched = {
+        id: `u-${Date.now()}`,
+        username,
+        full_name: formattedName,
+        avatar_url: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80`,
+        bio: 'ConnectPurpose member ready to learn, share, and collaborate.',
+        location: 'Kigali, Rwanda',
+        onboarding_completed: true,
+        message_privacy: 'community',
+        profile_visibility: 'public',
+        feed_priority: 'learning',
+        selected_purposes: ['learn-skills', 'find-opportunities'],
+        selected_interests: ['Technology', 'Skills Growth'],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        trust_points: 15,
+        helpful_count: 0,
+      };
+      setAllUsers((prev) => [matched!, ...prev]);
     }
-    return false;
+
+    setCurrentUserId(matched.id);
+    addToast(`Welcome back, ${matched.full_name}!`, 'success');
+    navigate('/home');
+    return true;
+  };
+
+  const loginWithSocial = (provider: 'google' | 'facebook' | 'x') => {
+    const providerNames = {
+      google: 'Google',
+      facebook: 'Facebook',
+      x: 'X',
+    };
+    const providerAvatars = {
+      google: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=256&h=256&q=80',
+      facebook: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=256&h=256&q=80',
+      x: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&h=256&q=80',
+    };
+
+    const username = `${provider}_user`;
+    let user = allUsers.find((u) => u.username === username);
+
+    if (!user) {
+      user = {
+        id: `u-${provider}-${Date.now()}`,
+        username,
+        full_name: `${providerNames[provider]} Member`,
+        avatar_url: providerAvatars[provider],
+        bio: `Connected via ${providerNames[provider]}. Here to build trusted connections and learn.`,
+        location: 'Kigali, Rwanda',
+        onboarding_completed: true,
+        message_privacy: 'community',
+        profile_visibility: 'public',
+        feed_priority: 'learning',
+        selected_purposes: ['learn-skills', 'find-opportunities', 'build-project'],
+        selected_interests: ['Technology', 'Networking', 'Collaborations'],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        trust_points: 20,
+        helpful_count: 1,
+      };
+      setAllUsers((prev) => [user!, ...prev]);
+    }
+
+    setCurrentUserId(user.id);
+    addToast(`Successfully connected with ${providerNames[provider]}!`, 'success');
+    navigate('/home');
+    return user;
   };
 
   const registerAccount = (fullName: string, email: string) => {
@@ -714,6 +790,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         allUsers,
         loginAs,
         loginWithEmail,
+        loginWithSocial,
         registerAccount,
         logout,
         updateCurrentUserProfile,

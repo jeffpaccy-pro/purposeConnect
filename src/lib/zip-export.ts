@@ -1,6 +1,26 @@
 import JSZip from 'jszip';
 
 export async function exportProjectZip() {
+  try {
+    // 1. Try to download the pre-built complete repository ZIP if available
+    const response = await fetch('/ConnectPurpose-MVP.zip');
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ConnectPurpose-MVP.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return;
+    }
+  } catch (err) {
+    console.warn('Pre-built ZIP fetch failed, falling back to dynamic generator:', err);
+  }
+
+  // Fallback: Dynamic JSZip generation
   const zip = new JSZip();
 
   // Root files

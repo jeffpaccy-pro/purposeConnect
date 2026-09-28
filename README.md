@@ -1,241 +1,193 @@
-# ConnectPurpose MVP
+# ConnectPurpose — Authentication Module
 
-> “Connect with people. Learn together. Build real opportunities.”
+> Authentic, secure, and accessible authentication for ConnectPurpose: “Connect with people. Learn together. Build real opportunities.”
 
-ConnectPurpose is a purpose-driven community web platform engineered to prioritize trusted relationships, skill development, collaborative project workspaces, study pods, and verified opportunities over infinite feeds, vanity metrics, and ad tracking.
-
----
-
-## 1. Core Differentiators & Product Architecture
-
-1. **Purpose-Driven Experience**:
-   Every user defines their primary focus during onboarding:
-   - Learn skills
-   - Find opportunities
-   - Build a project
-   - Meet people
-   - Sell locally
-   - Support community
-
-2. **Trust Instead of Popularity**:
-   - Zero public follower counters.
-   - Zero mindless "like" buttons.
-   - Five meaningful, intent-focused peer reactions:
-     - **Helpful** (constructive advice and support)
-     - **I learned this** (knowledge and skill gained)
-     - **Interested** (curiosity or follow-up)
-     - **Trusted source** (verified expertise or credible insight)
-     - **Needs checking** (fact-checking and constructive critique)
-
-3. **Conversation-to-Action**:
-   Conversations immediately branch into actionable tools:
-   - **Help Requests**: Categorized peer questions with urgency tags (*Urgent*, *This week*, *No rush*).
-   - **Collaborative Project Workspaces**: Shared task boards (*To Do*, *In Progress*, *Done*), milestone progress tracking, and co-builder invites.
-   - **Study Pods & Events**: Online rooms and local workshops with real-time RSVP management (*Going*, *Interested*, *Decline*).
-   - **Verified Opportunities**: Apprenticeships, mentorship cohorts, and collaboration briefs with required skill tags and remote status.
-
-4. **Explainable Feed**:
-   Every post in the user’s feed includes a **“Why am I seeing this?”** control that explains the exact signals:
-   - Community membership
-   - Matched skills and interests
-   - Urgency or upcoming session schedule
-   - Zero black-box virality algorithms.
-
-5. **Privacy, Safety, & Data Ownership**:
-   - Granular Direct Message controls (*Community members*, *Approved contacts only*, or *Nobody*).
-   - Profile visibility (*Public*, *Community only*, *Private*).
-   - User blocking and community-wide report submissions with reason tracking.
-   - Complete personal data JSON export and downloadable full repository ZIP export.
+This repository implements the focused authentication module for **ConnectPurpose**, utilizing Next.js (App Router), TypeScript, Tailwind CSS, React Hook Form, Zod validation, and Supabase Auth with `@supabase/ssr` cookie-based session handling.
 
 ---
 
-## 2. Technology Stack
+## 1. Project Purpose
 
-- **Framework**: Vite + React 19 + TypeScript
-- **Styling**: Tailwind CSS v4 with custom brand tokens
-- **Validation**: Zod schema validation across all creation forms
+ConnectPurpose is a purpose-driven community web platform engineered around authentic relationships, peer study groups, and verified opportunities. The authentication module is designed with strict security first principles:
+- **No Account Enumeration**: Generic error responses prevent attackers from discovering registered emails during login, registration, or password reset.
+- **Strong Password Policy**: 12+ characters with uppercase, lowercase, and numeric enforcement validated client- and server-side.
+- **Open Redirect Protection**: Strict internal path sanitization on all `next` URL parameters.
+- **Accessible UI**: Semantic labels, visible focus rings, `aria-live` alert regions, and clear inline validation.
+- **Cookie-Based SSR Security**: Secure session verification and middleware route protection.
+
+---
+
+## 2. Tech Stack & Dependencies
+
+- **Node.js**: v18.18+ or v20+ recommended
+- **Framework**: Next.js 14/15 (App Router) & React 19
+- **Authentication**: Supabase Auth (`@supabase/supabase-js`, `@supabase/ssr`)
+- **Validation**: Zod + `@hookform/resolvers` + React Hook Form
 - **Icons**: Lucide React
-- **Packaging & Export**: JSZip for live, client-side ZIP packaging of the entire codebase and SQL migrations
-- **Database & Auth (Supabase Specification)**:
-  - 24 normalized PostgreSQL tables
-  - Row Level Security (RLS) policies for every table
-  - Optimized B-tree indexes for fast queries
-  - Seed migration script for instant onboarding verification
+- **Styling**: Tailwind CSS with custom design tokens
 
 ---
 
-## 3. Getting Started
+## 3. File Structure
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-
-### Installation
-\`\`\`bash
-# 1. Install dependencies
-npm install
-
-# 2. Run the development server
-npm run dev
-\`\`\`
-
-The application dev server will launch at \`http://localhost:3000\`.
-
----
-
-## 4. Supabase Setup & Migrations
-
-ConnectPurpose includes complete, production-ready PostgreSQL SQL migrations and seed data in the \`supabase/\` directory:
-
-1. **Create a Supabase Project**:
-   Go to [supabase.com](https://supabase.com) and create a new project.
-
-2. **Execute Schema Migration**:
-   In your Supabase project dashboard, open the **SQL Editor**, and run the SQL found in:
-   \`\`\`
-   supabase/migrations/20260928000000_initial_schema.sql
-   \`\`\`
-   This provisions all 24 tables:
-   - \`profiles\`, \`purposes\`, \`user_purposes\`, \`interests\`, \`user_interests\`
-   - \`communities\`, \`community_members\`
-   - \`posts\`, \`comments\`, \`reactions\`, \`saved_items\`
-   - \`events\`, \`event_attendees\`
-   - \`projects\`, \`project_members\`, \`tasks\`
-   - \`opportunities\`
-   - \`conversations\`, \`conversation_members\`, \`messages\`
-   - \`notifications\`, \`reports\`, \`blocks\`, \`contributions\`
-   along with all foreign key constraints, indexes, and Row Level Security policies.
-
-3. **Execute Seed Data**:
-   In the **SQL Editor**, run:
-   \`\`\`
-   supabase/seed.sql
-   \`\`\`
-   This populates demo communities (e.g. *Rwanda IT Learners*, *Web Builders*, *Kigali Creators*), demo users (*Aline*, *Eric*, *Chantal*, *David*, *Grace*), study events, collaborative projects, and verified opportunities.
-
-4. **Configure Environment Variables**:
-   Copy your API keys into \`.env\`:
-   \`\`\`bash
-   cp .env.example .env
-   \`\`\`
-   Update \`VITE_SUPABASE_URL\` and \`VITE_SUPABASE_ANON_KEY\`.
-
----
-
-## 5. Demo Accounts for Instant Evaluation
-
-ConnectPurpose provides a built-in demo account switcher located in the user menu (top right of the authenticated header) and the login screen:
-
-| Name | Username | Role / Specialty | Focus Area |
-| :--- | :--- | :--- | :--- |
-| **Aline Uwimana** | \`aline_u\` | Frontend Developer & Mentor | Study pods, CSS/React mentorship |
-| **Eric Ndayishimiye** | \`eric_n\` | Student & IoT Learner | Open Agri-Sensor hardware, beginner web |
-| **Chantal Mukamana** | \`chantal_m\` | UI/UX Product Designer | Accessible design systems, Figma workshops |
-| **David Habimana** | \`david_h\` | Full-Stack Builder & Organizer | Open source infrastructure, community sprints |
-| **Grace Uwase** | \`grace_u\` | Youth Coordinator | Health-tech internships, student opportunities |
-
----
-
-## 6. Project File Structure
-
-\`\`\`
-.
-├── .env.example                    # Environment variable template
-├── README.md                       # Documentation & setup guide
-├── index.html                      # HTML entry point with Plus Jakarta Sans & Cabinet Grotesk
-├── metadata.json                   # Applet metadata
-├── package.json                    # Project dependencies
+```
+├── app/
+│   ├── layout.tsx                     # Root App Router layout
+│   ├── globals.css                    # Base styling & brand variables
+│   ├── page.tsx                       # Root route (redirects to /login)
+│   ├── login/page.tsx                 # /login route
+│   ├── register/page.tsx              # /register route
+│   ├── check-email/page.tsx           # /check-email post-signup instructions
+│   ├── forgot-password/page.tsx       # /forgot-password reset request
+│   ├── reset-password/page.tsx        # /reset-password password update
+│   ├── home/page.tsx                  # Protected /home dashboard
+│   ├── account/page.tsx               # Protected /account settings
+│   ├── auth/callback/route.ts         # Route handler exchanging OAuth/email codes
+│   ├── privacy/page.tsx               # Privacy policy
+│   └── terms/page.tsx                 # Terms of use
+├── components/
+│   ├── app-logo.tsx                   # “◉ ConnectPurpose” wordmark & symbol
+│   └── auth/
+│       ├── auth-card.tsx              # Centered white card on #F7F9FC canvas
+│       ├── auth-error-alert.tsx       # Accessible aria-live alert container
+│       ├── forgot-password-form.tsx   # Zod-validated password recovery form
+│       ├── login-form.tsx             # Zod-validated login with remember-me
+│       ├── password-field.tsx         # Input with show/hide toggle & requirements
+│       ├── register-form.tsx          # Zod-validated registration with terms
+│       ├── reset-password-form.tsx    # Password update with recovery verification
+│       └── social-auth-buttons.tsx    # Google and Facebook OAuth buttons
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts                  # Browser Supabase client (@supabase/ssr)
+│   │   ├── server.ts                  # Server Component Supabase client
+│   │   └── middleware.ts              # Session refreshing & route protection
+│   ├── utils/
+│   │   └── safe-next.ts               # Open redirect prevention utility
+│   └── validations/
+│       └── auth.ts                    # Zod schemas for all authentication forms
+├── middleware.ts                      # Edge middleware protecting /home & /account
 ├── supabase/
-│   ├── migrations/
-│   │   └── 20260928000000_initial_schema.sql  # 24 tables, indexes, RLS policies
-│   └── seed.sql                    # Initial seed data for demo spaces and users
-└── src/
-    ├── App.tsx                     # Main application router and responsive shell
-    ├── index.css                   # Tailwind CSS v4 design tokens and base styles
-    ├── main.tsx                    # React DOM entry point
-    ├── types/
-    │   └── database.ts             # TypeScript models for all 24 entities
-    ├── lib/
-    │   ├── seed-data.ts            # High-fidelity realistic mock records
-    │   ├── store.tsx               # Central reactive state, auth, and persistence engine
-    │   ├── supabase.ts             # Supabase client wrapper & diagnostics
-    │   └── zip-export.ts           # JSZip generator for 1-click codebase archive export
-    ├── components/
-    │   ├── common/
-    │   │   ├── AppLogo.tsx         # Brand logo & mark
-    │   │   ├── AuthHeader.tsx      # Desktop/mobile authenticated header with search & demo switcher
-    │   │   ├── BlockUserDialog.tsx # Safety user block modal
-    │   │   ├── CreateActionSheet.tsx # Bottom sheet / action launcher (+ button)
-    │   │   ├── DesktopSidebar.tsx  # Responsive left navigation with community shortcuts
-    │   │   ├── FeedPostCard.tsx    # Post card with meaningful reactions & explainable dialog
-    │   │   ├── MeaningfulReactionBar.tsx # 5 intent-focused peer reactions
-    │   │   ├── MobileBottomNav.tsx # Mobile navigation bar with center orange + button
-    │   │   ├── NotificationDropdown.tsx # Real-time unread alerts & mark-all-read
-    │   │   ├── PublicHeader.tsx    # Marketing top bar
-    │   │   ├── ReportDialog.tsx    # Content & user reporting form
-    │   │   ├── Toast.tsx           # Accessible notification toasts
-    │   │   └── WhyThisPostDialog.tsx # Explainable feed transparency dialog
-    │   ├── cards/
-    │   │   ├── CommunityCard.tsx   # Community profile preview & join/leave action
-    │   │   ├── EventCard.tsx       # Session card with RSVP buttons
-    │   │   ├── OpportunityCard.tsx # Internship/mentorship card with save & apply
-    │   │   └── ProjectCard.tsx     # Project card with milestone progress bar
-    │   └── modals/
-    │       ├── AskHelpModal.tsx    # Zod-validated help request creation modal
-    │       ├── CreatePostModal.tsx # Zod-validated post publisher
-    │       └── EditProfileModal.tsx# Profile details editor
-    └── pages/
-        ├── PublicHome.tsx          # Marketing homepage with 6 purpose cards & 4 benefit cards
-        ├── Login.tsx               # Login with Google, email, and one-click demo accounts
-        ├── Register.tsx            # Multi-requirement account registration
-        ├── ForgotPassword.tsx      # Password reset link dispatcher
-        ├── ResetPassword.tsx       # New password setter
-        ├── LegalPage.tsx           # Privacy Policy, Terms, and Community Guidelines
-        ├── Onboarding.tsx          # 6-step progress-tracked purpose calibration
-        ├── HomeDashboard.tsx       # Purpose dashboard with "For you" feed & upcoming sessions
-        ├── Explore.tsx             # Topic search, discovery, and member directory
-        ├── Communities.tsx         # Directory of joined and public communities
-        ├── CommunityDetail.tsx     # Community profile with Posts, Events, Projects, Members tabs
-        ├── Opportunities.tsx       # Verified job/internship/mentorship filters
-        ├── NewOpportunity.tsx      # Opportunity creation form
-        ├── Projects.tsx            # Collaborative projects list
-        ├── NewProject.tsx          # Project initialization form
-        ├── ProjectDetail.tsx       # Workspace with interactive 3-column task board
-        ├── Events.tsx              # Workshops and study sessions listing
-        ├── NewEvent.tsx            # Session scheduler
-        ├── EventDetail.tsx         # Workshop details with video room & RSVP controls
-        ├── Messages.tsx            # Direct messaging with privacy enforcement
-        ├── Profile.tsx             # Member profile with trust points & contributions
-        └── Settings.tsx            # Privacy settings, feed priorities, and data export
-\`\`\`
+│   └── migrations/
+│       └── 001_auth_profiles.sql      # public.profiles table, RLS, and trigger
+├── .env.example                       # Environment variables template
+└── README.md                          # Architecture & setup guide
+```
 
 ---
 
-## 7. Checklist of Completed Features
+## 4. Setup & Installation
 
-- [x] **Full Purpose-Driven Architecture**: 6 primary purpose tracks and 12 interest tags.
-- [x] **Public Landing & Marketing Experience**: Responsive hero, visual product mock card, 6 purpose cards, 3-step guide, and 4 benefit cards.
-- [x] **Authentication Flow**: Login, Registration with password requirements, Forgot Password, Reset Password, Google authentication simulation, and 1-click demo switcher.
-- [x] **6-Step Onboarding**: Progress-bar driven wizard for purposes, interests, custom tags, suggested communities, and privacy preferences.
-- [x] **Desktop Sidebar & Mobile Bottom Navigation**: Responsive shell with sticky side navigation and center circular orange "+" button opening an action bottom sheet.
-- [x] **Explainable "For you" Feed**: "Why am I seeing this?" modal on every post displaying clear, non-algorithmic reasons.
-- [x] **Meaningful Reactions**: *Helpful*, *I learned this*, *Interested*, *Trusted source*, and *Needs checking* with live toggle state.
-- [x] **Action Workspaces**:
-  - Help Requests with urgency tags (*Urgent*, *This week*, *No rush*).
-  - Collaborative Projects with interactive 3-column task boards (*To Do*, *In Progress*, *Done*).
-  - Events with online video links and 3-state RSVP (*Going*, *Interested*, *Decline*).
-  - Opportunities with category filters (*Internships*, *Mentorship*, *Collaboration*, *Jobs*).
-- [x] **Direct Messaging**: Conversation list, message history, instant reply composer, and privacy gating.
-- [x] **Trust & Contribution System**: Trust points, helpful responses count, and community member badges.
-- [x] **Safety & Moderation**: Content report dialog, user blocking, and message privacy toggles.
-- [x] **Data Ownership & ZIP Export**: Personal data JSON export + complete project repository ZIP download via JSZip.
-- [x] **Supabase Migrations**: 24 tables with indexes, RLS policies, and comprehensive seed data in \`supabase/\`.
+### Step 1: Clone & Install Dependencies
+```bash
+npm install
+```
+
+### Step 2: Configure Environment Variables
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
+
+Populate the keys with your Supabase project credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+> **CRITICAL SECURITY NOTE:**
+> Never expose `SUPABASE_SERVICE_ROLE_KEY`, database passwords, or JWT secrets to client bundles or public repositories. Only the `NEXT_PUBLIC_SUPABASE_ANON_KEY` is meant for client communication.
+
+### Step 3: Run the Database Migration
+1. Go to your Supabase project dashboard at [supabase.com](https://supabase.com).
+2. Open the **SQL Editor** from the left navigation bar.
+3. Open `supabase/migrations/001_auth_profiles.sql` and run the script.
+4. This script automatically:
+   - Provisions `public.profiles` with Row Level Security enabled.
+   - Attaches the `on_auth_user_created` trigger to `auth.users` to automatically sync full names into `public.profiles`.
+   - Restricts initial profile read/write access strictly to the authenticated user (`auth.uid() = id`).
+
+### Step 4: Run Locally
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 8. Intentionally Deferred Features (Post-MVP)
+## 5. Supabase Authentication Configuration
 
-- Payment processing and escrow (keeping the MVP free and accessible).
-- Audio/video live streaming (integrated external open rooms like Jitsi Meet for MVP).
-- Proprietary proprietary vector ranking or opaque recommendation models (strictly explainable feed logic used).
-- Cryptocurrency or token rewards (merit measured purely through transparent peer trust points).
+### Email Confirmation Setup
+1. In the Supabase dashboard, navigate to **Authentication → URL Configuration**.
+2. Set **Site URL** to:
+   - Local: `http://localhost:3000`
+   - Production: `https://your-production-domain.com`
+3. In **Redirect URLs**, add:
+   - `http://localhost:3000/auth/callback`
+   - `http://localhost:3000/reset-password`
+   - `https://your-production-domain.com/auth/callback`
+   - `https://your-production-domain.com/reset-password`
+4. Under **Authentication → Providers → Email**, ensure Email signup is enabled.
+
+### Google OAuth Setup
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com).
+2. Navigate to **APIs & Services → Credentials**.
+3. Create an **OAuth 2.0 Client ID** (Web Application).
+4. Add to **Authorized redirect URIs**:
+   `https://YOUR-PROJECT-ID.supabase.co/auth/v1/callback`
+5. In Supabase, navigate to **Authentication → Providers → Google**, toggle **Enable Google provider**, and paste your **Client ID** and **Client Secret**.
+
+### Facebook OAuth Setup
+1. Create an app in [Meta for Developers](https://developers.facebook.com).
+2. Under **Facebook Login → Settings**, set **Valid OAuth Redirect URIs** to:
+   `https://YOUR-PROJECT-ID.supabase.co/auth/v1/callback`
+3. In Supabase, navigate to **Authentication → Providers → Facebook**, toggle **Enable Facebook provider**, and paste your **App ID** and **App Secret**.
+
+---
+
+## 6. Route & Protection Matrix
+
+| Route | Access | Behavior |
+| :--- | :--- | :--- |
+| `/login` | Public | Email/password login, Google/Facebook OAuth, redirect to `/home` on success. Redirects to `/home` if already authenticated. |
+| `/register` | Public | Full name, email, strong password with checklist, terms agreement. Redirects to `/check-email`. |
+| `/check-email` | Public | Friendly post-registration guidance with spam folder reminders. |
+| `/forgot-password` | Public | Email input for password reset link. Anti-enumeration generic confirmation. |
+| `/reset-password` | Recovery | Secure password update using session recovery tokens. |
+| `/auth/callback` | Public | Server Route Handler that exchanges authorization codes for sessions. |
+| `/home` | **Protected** | Accessible only to authenticated users. Displays user welcome card, account link, and logout button. |
+| `/account` | **Protected** | Accessible only to authenticated users. Shows email, auth provider details, password change button, and logout button. |
+| `/terms` & `/privacy` | Public | Static legal disclosures. |
+
+---
+
+## 7. Security Pre-Launch Checklist
+
+- [x] **No Account Enumeration**: Authentication failure messages, registration responses, and password reset requests use generic copy to prevent attackers from querying whether an email exists.
+- [x] **12+ Character Passwords**: Mandatory multi-character class requirement (uppercase, lowercase, number, 12+ length) stops common dictionary and brute-force attacks.
+- [x] **Open Redirect Defense**: All incoming `next` parameters are strictly sanitized through `lib/utils/safe-next.ts` to ensure only relative internal paths (starting with `/`) are honored.
+- [x] **Cookie-Based SSR Middleware**: Sessions are evaluated server-side using `@supabase/ssr` to prevent client-side token spoofing.
+- [x] **Autocomplete Hygiene**: Fields specify `name`, `email`, `current-password`, and `new-password` for password manager compatibility without compromising security.
+- [x] **No Plaintext Secrets**: No API keys or secrets are logged or exposed to the client.
+
+---
+
+## 8. Deployment to Vercel
+
+1. Push your repository to GitHub, GitLab, or Bitbucket.
+2. In Vercel, click **Add New Project** and import the repository.
+3. Under **Environment Variables**, add:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (e.g. `https://your-domain.vercel.app`)
+4. Click **Deploy**.
+5. Once deployed, update your **Redirect URLs** in your Supabase project dashboard to include `https://your-domain.vercel.app/auth/callback` and `https://your-domain.vercel.app/reset-password`.
+
+---
+
+## 9. Future Security Enhancements (Post-MVP)
+
+- **Multi-Factor Authentication (MFA / TOTP)**: Integrating Supabase Auth MFA (`supabase.auth.mfa.enroll()`) for authenticator apps.
+- **Passkeys & WebAuthn**: Implementing FIDO2 hardware biometric logins.
+- **Bot Protection & Rate Limiting**: Adding Cloudflare Turnstile or Supabase Captcha on `/login` and `/register` endpoints.
+- **Active Session & Device Management**: Allowing users to audit and revoke active browser sessions across different devices.
